@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang = "ja">
+<head>
+    <meta charset = "utf-8">
+    <title>若幸祭レジシステム</title>
+    <link rel="stylesheet" href="wakosaisystem.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script type="module" src="wakosaisystem.js"></script>
+</head>
+
+<body>
+    <h1>若幸祭レジシステム</h1>
+    <div>
+        <div><img class="stock" src="" alt="塩"></div>
+        <button type="button" class="taste-button" data-id="solt" data-name="塩味">選択</button>
+    </div>
+    <div>
+        <div><img class="stock" src="" alt="コンソメ"></div>
+        <button type="button" class="taste-button" data-id="consome" data-name="コンソメ味">選択</button>
+    </div>
+    <div>
+        <div><img class="stock" src="" alt="のり塩"></div>
+        <button type="button" class="taste-button" data-id="norisolt" data-name="のり塩味">選択</button>
+    </div>
+    <div>
+        <div><img class="stock" src="" alt="コーンポタージュ"></div>
+        <button type="button" class="taste-button" data-id="conpota" data-name="コーンポタージュ味">選択</button>
+    </div>
+    <div>
+        <div><img class="stock" src="" alt="バター醤油"></div>
+        <button type="button" class="taste-button" data-id="bataseuyu" data-name="バター醤油味">選択</button>
+    </div>
+    <div>
+        <div><img class="stock" src="" alt="BBQ"></div>
+        <button type="button" class="taste-button" data-id="BBQ" data-name="バーベキュー味">選択</button>
+    </div>
+    <div>
+        <button type="button" class="log">履歴を表示</button>
+    </div>
+
+    <!-- sales入力用モーダル -->
+    <div class="modal-container" id="sales-input">
+        <div class="modal-body">
+            <!-- 閉じるボタン -->
+            <div class="modal-close">×</div>
+            <!-- モーダル内のコンテンツ -->
+            <div class="modal-content">
+                <p class="modal-intext"></p>
+                <div> 
+                    <p>Lサイズ</p>
+                    <textarea class="Lsales-count" placeholder="数値を入力"></textarea>
+                </div>
+                <div> 
+                    <p>Sサイズ</p>
+                    <textarea class="Ssales-count" placeholder="数値を入力"></textarea>
+                </div>
+                <div>
+                    <button type="button" class="submit-check">注文確認</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- submit用モーダル -->
+    <div class="modal-container" id="submit-modal">
+        <div class="modal-body">
+            <!-- モーダル内のコンテンツ -->
+            <div class="modal-content">
+                <p class="modal-intext"></p>
+                <div class="Lcount"></div>
+                <div class="Scount"></div>
+                <div>
+                    <button type="button" class="submit">注文確定</button>
+                </div>
+                <div>
+                    <button type="button" class="cancel">キャンセル</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- success表示モーダル -->
+     <div class="modal-container" id="success-modal">
+        <div class="modal-body">
+            <div class="modal-close">×</div>
+            <!-- モーダル内のコンテンツ -->
+            <div class="modal-content">
+                <p>DBへの格納に成功しました</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 売上確認用モーダル -->
+    <div class="modal-container" id="sales-logs">
+        <div class="modal-body">
+            <div class="modal-close">×</div>
+            <div class="modal-content">
+                <table>
+                    <thead>
+                        <tr>
+                            <th scope="col">商品</th>
+                            <th scope="col">Lサイズ個数</th>
+                            <th scope="col">Sサイズ個数</th>
+                            <th scope="col">小計</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="solt">
+                            <th scope="row">塩味</th>
+                            <td class="Lcount-value"></td>
+                            <td class="Scount-value"></td>
+                            <td class="total"></td>
+                        </tr>
+                        <tr class="consome">
+                            <th scope="row">コンソメ味</th>
+                            <td class="Lcount-value"></td>
+                            <td class="Scount-value"></td>
+                            <td class="total"></td>
+                        </tr>
+                        <tr class="norisolt">
+                            <th scope="row">のり塩味</th>
+                            <td class="Lcount-value"></td>
+                            <td class="Scount-value"></td>
+                            <td class="total"></td>
+                        </tr>
+                        <tr class="conpota">
+                            <th scope="row">コーンポタージュ味</th>
+                            <td class="Lcount-value"></td>
+                            <td class="Scount-value"></td>
+                            <td class="total"></td>
+                        </tr>
+                        <tr class="bataseuyu">
+                            <th scope="row">バター醤油味</th>
+                            <td class="Lcount-value"></td>
+                            <td class="Scount-value"></td>
+                            <td class="total"></td>
+                        </tr>
+                        <tr class="BBQ">
+                            <th scope="row">バーベキュー味</th>
+                            <td class="Lcount-value"></td>
+                            <td class="Scount-value"></td>
+                            <td class="total"></td>
+                        </tr>
+                        <tr class="sum">
+                            <th scope="row">合計</th>
+                            <td class="Ltotal"></td>
+                            <td class="Stotal"></td>
+                            <td class="allrangetotal"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+    
+    
+</body>
