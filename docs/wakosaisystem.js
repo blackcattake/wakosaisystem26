@@ -1,26 +1,35 @@
 // Import the functions you need from the SDKs you need
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
-import { getDatabase, ref, push, onValue} from "https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+import { getDatabase, ref, push, onValue} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-	apiKey: "AIzaSyBOW_1RhbyZsqx_7EVDgXKotgQkKatss60",
-	authDomain: "wakosai-possystem-9fdf3.firebaseapp.com",
-	projectId: "wakosai-possystem-9fdf3",
-	databaseURL: "https://wakosai-possystem-9fdf3-default-rtdb.firebaseio.com:",
-	storageBucket: "wakosai-possystem-9fdf3.firebasestorage.app",
-	messagingSenderId: "520725043557",
-	appId: "1:520725043557:web:e8b68c691a3c64708b698c"
-};
+    apiKey: "AIzaSyBJ76_QooazJfdeU63NajhW4ze_Gggx5lE",
+    authDomain: "wakosai-possystem-3d4a2.firebaseapp.com",
+    databaseURL: "https://wakosai-possystem-3d4a2-default-rtdb.firebaseio.com",
+    projectId: "wakosai-possystem-3d4a2",
+    storageBucket: "wakosai-possystem-3d4a2.firebasestorage.app",
+    messagingSenderId: "289249107654",
+    appId: "1:289249107654:web:000704fae40335c04ec1c7"
+  };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 
+
+
 $(function(){
 
+	let soltprice = 300;
+	let consomeprice = 300;
+	let norisoltprice = 300;
+	let conpotaprice = 300;
+	let bataseuyuprice = 300;
+	let BBQprice = 300;
+	
 	//salesモーダル表示用関数
 	$('.taste-button').on('click', function(){
 		let taste = $(this).data('id');
@@ -297,14 +306,39 @@ $(function(){
 				const StotalCount = Stotals[tasteName];
 
 
-				if (tasteName == 'solt'){
-					tastesum = LtotalCount * 350 + StotalCount * 250;
-					$(`.${tasteName} .total`).text(`${tastesum} 円`);
-					allsum = allsum + tastesum;
-				}else{
-					tastesum = LtotalCount * 400 + StotalCount * 300;
-					$(`.${tasteName} .total`).text(`${tastesum} 円`);
-					allsum = allsum + tastesum;
+				// ここを変数化しないといけない
+				// 変数化したV
+				switch (tasteName){
+					case "solt":
+						tastesum = LtotalCount * soltprice + StotalCount * soltprice;
+						$(`.${tasteName} .total`).text(`${tastesum} 円`);
+						allsum = allsum + tastesum;
+						break;
+					case "consome":
+						tastesum = LtotalCount * consomeprice + StotalCount * consomeprice;
+						$(`.${tasteName} .total`).text(`${tastesum} 円`);
+						allsum = allsum + tastesum;
+						break;
+					case "norisolt":
+						tastesum = LtotalCount * norisoltprice + StotalCount * norisoltprice;
+						$(`.${tasteName} .total`).text(`${tastesum} 円`);
+						allsum = allsum + tastesum;
+						break;
+					case "conpota":
+						tastesum = LtotalCount * conpotaprice + StotalCount * conpotaprice;
+						$(`.${tasteName} .total`).text(`${tastesum} 円`);
+						allsum = allsum + tastesum;
+						break;
+					case "bataseuyu":
+						tastesum = LtotalCount * bataseuyuprice + StotalCount * bataseuyuprice;
+						$(`.${tasteName} .total`).text(`${tastesum} 円`);
+						allsum = allsum + tastesum;
+						break;
+					case "BBQ":
+						tastesum = LtotalCount * BBQprice + StotalCount * BBQprice;
+						$(`.${tasteName} .total`).text(`${tastesum} 円`);
+						allsum = allsum + tastesum;
+						break;
 				}
 			});
 
@@ -314,6 +348,63 @@ $(function(){
 		
 		
 	};
+
+	$('.change').on('click', function(){
+		change()
+	});
+
+	function change(){
+
+		let close = $('.modal-close'),
+		changeprice= $('#changeprice');
+		
+
+		//モーダルウィンドうぉ即時表示
+		$(function(){
+			changeprice.addClass('active');
+			return false;
+		});
+
+		//閉じるボタンをクリックしたらモーダルを閉じる
+		close.on('click',function(){	
+			changeprice.removeClass('active');
+		});
+
+		//モーダルの外側をクリックしたらモーダルを閉じる
+		$(document).on('click',function(e) {
+			if(!$(e.target).closest('.modal-body').length) {
+				changeprice.removeClass('active');
+			};
+		});
+
+		$('.change-check').on('click', function(){
+			let changecheckmodal = $('#change-check-modal');
+			
+			
+			let Csolt = $('#Csolt');
+			let Cconsome = $('#Cconsome');
+			let Cnorisolt = $('#Cnorisolt');
+			let Cconpota = $('#Cconpota');
+			let Cbataseuyu = $('#Cbataseuyu');
+			let CBBQ = $('#CBBQ');
+			
+			//モーダル切り替えのために即時モーダルを閉じる
+			$(function(){
+				changeprice.removeClass('active');
+			});
+
+			$(function(){
+				changecheckmodal.addClass('active');
+				return false;
+			});
+
+			$('.changesoltvalue').text("塩味" + Csolt + "円");
+			$('.changeconsomevalue').text("コンソメ味" + Cconsome + "円")
+
+
+		});
+	};
+
 	
     
 });

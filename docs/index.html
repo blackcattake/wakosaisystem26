@@ -37,6 +37,10 @@
     <div>
         <button type="button" class="log">履歴を表示</button>
     </div>
+    <div>
+        <button type="button" class="change">設定価格変更</button>
+    </div>
+
 
     <!-- sales入力用モーダル -->
     <div class="modal-container" id="sales-input">
@@ -61,6 +65,7 @@
         </div>
     </div>
 
+
     <!-- submit用モーダル -->
     <div class="modal-container" id="submit-modal">
         <div class="modal-body">
@@ -79,6 +84,7 @@
         </div>
     </div>
 
+
     <!-- success表示モーダル -->
      <div class="modal-container" id="success-modal">
         <div class="modal-body">
@@ -89,6 +95,7 @@
             </div>
         </div>
     </div>
+
 
     <!-- 売上確認用モーダル -->
     <div class="modal-container" id="sales-logs">
@@ -154,6 +161,72 @@
     </div>
 
 
+    <!--価格変更用モーダル-->
+    <div class="modal-container" id="changeprice">
+        <div class="modal-body">
+            <div class="modal-close">×</div>
+            <div class="modal-content">
+                <div>
+                    <p>変更後の価格を入力してください</p>
+                    <p>変更がない場合は空白のままで大丈夫です</p>
+                </div>
+                <div>
+                    <p>塩味</p>
+                    <textarea class="changepricedata" id="Csolt" placeholder="数値を入力"></textarea>
+                </div>
+                <div>
+                    <p>コンソメ味</p>
+                    <textarea class="changepricedata" id="Cconsome" placeholder="数値を入力"></textarea>
+                </div>
+                <div>
+                    <p>のり塩味</p>
+                    <textarea class="changepricedata" id="Cnorisolt" placeholder="数値を入力"></textarea>
+                </div>
+                <div>
+                    <p>コーンポタージュ味</p>
+                    <textarea class="changepricedata" id="Cconpota" placeholder="数値を入力"></textarea>
+                </div>
+                <div>
+                    <p>バター醤油味</p>
+                    <textarea class="changepricedata" id="Cbataseuyu" placeholder="数値を入力"></textarea>
+                </div>
+                <div>
+                    <p>BBQ味</p>
+                    <textarea class="changepricedata" id="CBBQ" placeholder="数値を入力"></textarea>
+                </div>
+                <div>
+                    <button type="button" class="changecostsubmit">確定</button>
+                </div>
+                <div>
+                    <button type="button" class="cancel">キャンセル</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--ここにchange-submitを作りなさいこれは命令だ。
+        あとjs側にもchange-submit用の確認モーダルを作りなさい。-->
+
+    <div class="modal-container" id="change-check-modal">
+        <div class="modal-body">
+            <!-- モーダル内のコンテンツ -->
+            <div class="modal-content">
+                <p class="modal-intext"></p>
+                <div class="changesoltvalue"></div>
+                <div class="changeconsomevalue"></div>
+                <div class="changenorisoltvalue"></div>
+                <div class="changeconpotavalue"></div>
+                <div class="changebataseuyuvalue"></div>
+                <div class="changeBBQvalue"></div>
+                <div>
+                    <button type="button" class="submit">注文確定</button>
+                </div>
+                <div>
+                    <button type="button" class="cancel">キャンセル</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
 
