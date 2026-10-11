@@ -23,27 +23,27 @@
     <h1>若幸祭レジシステム</h1>
     <div>
         <div><img class="stock" src="" alt="塩"></div>
-        <button type="button" class="taste-button" data-id="solt" data-name="塩味">選択</button>
+        <button type="button" class="salestaste" data-id="solt" data-name="塩味">選択</button>
     </div>
     <div>
         <div><img class="stock" src="" alt="コンソメ"></div>
-        <button type="button" class="taste-button" data-id="consome" data-name="コンソメ味">選択</button>
+        <button type="button" class="salestaste" data-id="consome" data-name="コンソメ味">選択</button>
     </div>
     <div>
         <div><img class="stock" src="" alt="のり塩"></div>
-        <button type="button" class="taste-button" data-id="norisolt" data-name="のり塩味">選択</button>
+        <button type="button" class="salestaste" data-id="norisolt" data-name="のり塩味">選択</button>
     </div>
     <div>
         <div><img class="stock" src="" alt="コーンポタージュ"></div>
-        <button type="button" class="taste-button" data-id="conpota" data-name="コーンポタージュ味">選択</button>
+        <button type="button" class="salestaste" data-id="conpota" data-name="コーンポタージュ味">選択</button>
     </div>
     <div>
         <div><img class="stock" src="" alt="バター醤油"></div>
-        <button type="button" class="taste-button" data-id="bataseuyu" data-name="バター醤油味">選択</button>
+        <button type="button" class="salestaste" data-id="bataseuyu" data-name="バター醤油味">選択</button>
     </div>
     <div>
         <div><img class="stock" src="" alt="BBQ"></div>
-        <button type="button" class="taste-button" data-id="BBQ" data-name="バーベキュー味">選択</button>
+        <button type="button" class="salestaste" data-id="BBQ" data-name="バーベキュー味">選択</button>
     </div>
     <div>
         <button type="button" class="log">履歴を表示</button>
@@ -63,10 +63,10 @@
                 <p class="modal-intext"></p>
                 <div> 
                     <p>個数</p>
-                    <textarea class="Lsales-count" placeholder="数値を入力"></textarea>
+                    <textarea class="salescount" placeholder="数値を入力"></textarea>
                 </div>
                 <div>
-                    <button type="button" class="submit-check">注文確認</button>
+                    <button type="button" class="salescheck">注文確認</button>
                 </div>
             </div>
         </div>
@@ -74,14 +74,14 @@
 
 
     <!-- submit用モーダル -->
-    <div class="modal-container" id="submit-modal">
+    <div class="modal-container" id="salescheck">
         <div class="modal-body">
             <!-- モーダル内のコンテンツ -->
             <div class="modal-content">
                 <p class="modal-intext"></p>
-                <div class="Lcount"></div>
+                <div class="countcheck"></div>
                 <div>
-                    <button type="button" class="submit">注文確定</button>
+                    <button type="button" class="salessubmit">注文確定</button>
                 </div>
                 <div>
                     <button type="button" class="cancel">キャンセル</button>
@@ -169,27 +169,27 @@
                 </div>
                 <div>
                     <div><img class="stock" src="" alt="塩"></div>
-                    <button type="button" class="taste-button" data-id="Csolt" data-name="塩味">選択</button>
+                    <button type="button" class="changetaste" data-id="Csolt" data-name="塩味">選択</button>
                 </div>
                 <div>
                     <div><img class="stock" src="" alt="コンソメ"></div>
-                    <button type="button" class="taste-button" data-id="Cconsome" data-name="コンソメ味">選択</button>
+                    <button type="button" class="changetaste" data-id="Cconsome" data-name="コンソメ味">選択</button>
                 </div>
                 <div>
                     <div><img class="stock" src="" alt="のり塩"></div>
-                    <button type="button" class="taste-button" data-id="Cnorisolt" data-name="のり塩味">選択</button>
+                    <button type="button" class="changetaste" data-id="Cnorisolt" data-name="のり塩味">選択</button>
                 </div>
                 <div>
                     <div><img class="stock" src="" alt="コーンポタージュ"></div>
-                    <button type="button" class="taste-button" data-id="Cconpota" data-name="コーンポタージュ味">選択</button>
+                    <button type="button" class="changetaste" data-id="Cconpota" data-name="コーンポタージュ味">選択</button>
                 </div>
                 <div>
                     <div><img class="stock" src="" alt="バター醤油"></div>
-                    <button type="button" class="taste-button" data-id="Cbataseuyu" data-name="バター醤油味">選択</button>
+                    <button type="button" class="changetaste" data-id="Cbataseuyu" data-name="バター醤油味">選択</button>
                 </div>
                 <div>
                     <div><img class="stock" src="" alt="BBQ"></div>
-                    <button type="button" class="taste-button" data-id="CBBQ" data-name="バーベキュー味">選択</button>
+                    <button type="button" class="changetaste" data-id="CBBQ" data-name="バーベキュー味">選択</button>
                 </div>
             </div>
         </div>
@@ -204,7 +204,7 @@
                 <p class="modal-intext"></p>
                 <div> 
                     <p>値段</p>
-                    <textarea class="channgepricedata" placeholder="数値を入力"></textarea>
+                    <textarea class="changepricevalue" placeholder="数値を入力"></textarea>
                 </div>
                 <div>
                     <button type="button" class="change-check">変更確認</button>
@@ -223,12 +223,7 @@
             <!-- モーダル内のコンテンツ -->
             <div class="modal-content">
                 <p class="modal-intext"></p>
-                <div class="changesoltvalue"></div>
-                <div class="changeconsomevalue"></div>
-                <div class="changenorisoltvalue"></div>
-                <div class="changeconpotavalue"></div>
-                <div class="changebataseuyuvalue"></div>
-                <div class="changeBBQvalue"></div>
+                <div class="countcheck"></div>
                 <div>
                     <button type="button" class="changepricesubmit">変更確定</button>
                 </div>
