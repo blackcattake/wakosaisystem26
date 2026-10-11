@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
-import { getDatabase, ref, push, onValue} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
+import { getDatabase, ref, push, onValue, set} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -22,14 +22,26 @@ const database = getDatabase(app);
 
 
 $(function(){
+	const firsttimestamp = Date.now();
+	push(ref(database, `data/price/Csolt/${firsttimestamp}`),{
+		price: 300,
+	});
+	push(ref(database, `data/price/Cconsome/${firsttimestamp}`),{
+		price: 300,
+	});
+	push(ref(database, `data/price/Cnorisolt/${firsttimestamp}`),{
+		price: 300,
+	});
+	push(ref(database, `data/price/Cconpota/${firsttimestamp}`),{
+		price: 300,
+	});
+	push(ref(database, `data/price/Cbataseuyu/${firsttimestamp}`),{
+		price: 300,
+	});
+	push(ref(database, `data/price/CBBQ/${firsttimestamp}`),{
+		price: 300,
+	});
 
-	let soltprice = 300;
-	let consomeprice = 300;
-	let norisoltprice = 300;
-	let conpotaprice = 300;
-	let bataseuyuprice = 300;
-	let BBQprice = 300;
-	
 	//salesモーダル表示用関数
 	$('.taste-button').on('click', function(){
 		let taste = $(this).data('id');
@@ -68,7 +80,6 @@ $(function(){
 		$('.submit-check').on('click', function(){
 			let submitmodal = $('#submit-modal');
 			let Lsalescount = $('.Lsales-count').val();
-			let Ssalescount = $('.Ssales-count').val();
 
 			//モーダル切り替えのために即時モーダルを閉じる
 			$(function(){
@@ -81,34 +92,30 @@ $(function(){
 			});
 
 			$('.Lcount').text("Lサイズ" + Lsalescount + "個");
-			$('.Scount').text("Sサイズ" + Ssalescount + "個");
-
 			$('.cancel').on('click', function(){
 				$('.Lsales-count').val('');
-				$('.Ssales-count').val('');
+
 				submitmodal.removeClass('active');
 			});
 		});
+
 
 	
 		//確定ボタンでDBに格納
 		$('.submit').on('click', function(){
 			let submitmodal = $('#submit-modal');
 			let Lsalescount = $('.Lsales-count').val();
-			let Ssalescount = $('.Ssales-count').val();
+			let price = ref(database, `data/price/${taste}`);
 
-			if (Lsalescount.trim() !== "" || Ssalescount.trim() !== ""){
+			if (Lsalescount.trim() !== ""){
 				if (Lsalescount.trim() == ""){
 					Lsalescount = 0
 				};
 
-				if (Ssalescount.trim() == ""){
-					Ssalescount = 0
-				};
 
 				push(dynamicRef,{
 					Lcount: Lsalescount,
-					Scount: Ssalescount,
+					price: price,
 					timestamp: Date.now()
 				})
 				.then(() => {
@@ -117,8 +124,6 @@ $(function(){
 					
 					// 送信後に textarea の中身を空っぽにするx
 					$('.Lsales-count').val('');
-					$('.Ssales-count').val('');
-
 					
 					// 送信後にモーダルを閉じる
 					$(function(){
@@ -349,12 +354,14 @@ $(function(){
 		
 	};
 
+
+	// 価格切り替え用
 	$('.change').on('click', function(){
 		change()
 	});
 
 	function change(){
-
+		let dynamicRef = ref(database, `data/price/${"taste"}`);
 		let close = $('.modal-close'),
 		changeprice= $('#changeprice');
 		
@@ -387,7 +394,26 @@ $(function(){
 			let Cconpota = $('#Cconpota');
 			let Cbataseuyu = $('#Cbataseuyu');
 			let CBBQ = $('#CBBQ');
-			
+
+			if (Csolt.val() == ""){
+				Csolt = soltprice;
+			};
+			if (Cconsome.val() == ""){
+				Cconsome = consomeprice
+			};
+			if (Cnorisolt.val() == ""){
+				Cnorisolt = norisoltprice
+			};
+			if (Cconpota.val() == ""){
+				Cconpota = conpotaprice;
+			};
+			if (Cbataseuyu.val() == ""){
+				Cbataseuyu = bataseuyuprice;
+			};
+			if (CBBQ.val() == ""){
+				CBBQ = BBQprice;
+			};
+
 			//モーダル切り替えのために即時モーダルを閉じる
 			$(function(){
 				changeprice.removeClass('active');
@@ -398,9 +424,12 @@ $(function(){
 				return false;
 			});
 
-			$('.changesoltvalue').text("塩味" + Csolt + "円");
-			$('.changeconsomevalue').text("コンソメ味" + Cconsome + "円")
-
+			$('.changesoltvalue').text("塩味" + Csolt.val() + "円");
+			$('.changeconsomevalue').text("コンソメ味" + Cconsome.val() + "円");
+			$('.changenorisoltvalue').text("のり塩味" + Cnorisolt.val() + "円");
+			$('.changeconpotavalue').text("のり塩味" + Cconpota.val() + "円");
+			$('.changebataseuyuvalue').text("のり塩味" + Cbataseuyu.val() + "円");
+			$('.changeBBQvalue').text("のり塩味" + CBBQ.val() + "円");
 
 		});
 	};

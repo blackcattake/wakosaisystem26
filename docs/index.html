@@ -1,3 +1,14 @@
+<!-- 変更箇所が多すぎるため完全に別プロジェクトで書き直すことを検討
+　　　要件
+    ・サイズは１種類
+    ・味ごとの値段はすべて同じ
+    ・複数味を同時に入れる機能は作りたくない（あったほうが良くはあると思う）
+    ・値段変更機能は今作ってる分が機能するはず
+    ・表形式の売り上げ状況表もやっぱり作っておいたほうが嬉しい
+    ・値段もDBで管理しないと～
+    ・つまりめんどくさい！　-->
+
+
 <!DOCTYPE html>
 <html lang = "ja">
 <head>
@@ -51,12 +62,8 @@
             <div class="modal-content">
                 <p class="modal-intext"></p>
                 <div> 
-                    <p>Lサイズ</p>
+                    <p>個数</p>
                     <textarea class="Lsales-count" placeholder="数値を入力"></textarea>
-                </div>
-                <div> 
-                    <p>Sサイズ</p>
-                    <textarea class="Ssales-count" placeholder="数値を入力"></textarea>
                 </div>
                 <div>
                     <button type="button" class="submit-check">注文確認</button>
@@ -73,7 +80,6 @@
             <div class="modal-content">
                 <p class="modal-intext"></p>
                 <div class="Lcount"></div>
-                <div class="Scount"></div>
                 <div>
                     <button type="button" class="submit">注文確定</button>
                 </div>
@@ -106,52 +112,44 @@
                     <thead>
                         <tr>
                             <th scope="col">商品</th>
-                            <th scope="col">Lサイズ個数</th>
-                            <th scope="col">Sサイズ個数</th>
+                            <th scope="col">販売数</th>
                             <th scope="col">小計</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr class="solt">
                             <th scope="row">塩味</th>
-                            <td class="Lcount-value"></td>
-                            <td class="Scount-value"></td>
+                            <td class="Lcount-value"></t>
                             <td class="total"></td>
                         </tr>
                         <tr class="consome">
                             <th scope="row">コンソメ味</th>
                             <td class="Lcount-value"></td>
-                            <td class="Scount-value"></td>
                             <td class="total"></td>
                         </tr>
                         <tr class="norisolt">
                             <th scope="row">のり塩味</th>
                             <td class="Lcount-value"></td>
-                            <td class="Scount-value"></td>
                             <td class="total"></td>
                         </tr>
                         <tr class="conpota">
                             <th scope="row">コーンポタージュ味</th>
                             <td class="Lcount-value"></td>
-                            <td class="Scount-value"></td>
                             <td class="total"></td>
                         </tr>
                         <tr class="bataseuyu">
                             <th scope="row">バター醤油味</th>
                             <td class="Lcount-value"></td>
-                            <td class="Scount-value"></td>
                             <td class="total"></td>
                         </tr>
                         <tr class="BBQ">
                             <th scope="row">バーベキュー味</th>
                             <td class="Lcount-value"></td>
-                            <td class="Scount-value"></td>
                             <td class="total"></td>
                         </tr>
                         <tr class="sum">
                             <th scope="row">合計</th>
                             <td class="Ltotal"></td>
-                            <td class="Stotal"></td>
                             <td class="allrangetotal"></td>
                         </tr>
                     </tbody>
@@ -162,43 +160,54 @@
 
 
     <!--価格変更用モーダル-->
-    <div class="modal-container" id="changeprice">
+    <div class="modal-container" id="changeselect">
         <div class="modal-body">
             <div class="modal-close">×</div>
             <div class="modal-content">
                 <div>
-                    <p>変更後の価格を入力してください</p>
-                    <p>変更がない場合は空白のままで大丈夫です</p>
+                    <p>変更したい商品を選んでください</p>
                 </div>
                 <div>
-                    <p>塩味</p>
-                    <textarea class="changepricedata" id="Csolt" placeholder="数値を入力"></textarea>
+                    <div><img class="stock" src="" alt="塩"></div>
+                    <button type="button" class="taste-button" data-id="Csolt" data-name="塩味">選択</button>
                 </div>
                 <div>
-                    <p>コンソメ味</p>
-                    <textarea class="changepricedata" id="Cconsome" placeholder="数値を入力"></textarea>
+                    <div><img class="stock" src="" alt="コンソメ"></div>
+                    <button type="button" class="taste-button" data-id="Cconsome" data-name="コンソメ味">選択</button>
                 </div>
                 <div>
-                    <p>のり塩味</p>
-                    <textarea class="changepricedata" id="Cnorisolt" placeholder="数値を入力"></textarea>
+                    <div><img class="stock" src="" alt="のり塩"></div>
+                    <button type="button" class="taste-button" data-id="Cnorisolt" data-name="のり塩味">選択</button>
                 </div>
                 <div>
-                    <p>コーンポタージュ味</p>
-                    <textarea class="changepricedata" id="Cconpota" placeholder="数値を入力"></textarea>
+                    <div><img class="stock" src="" alt="コーンポタージュ"></div>
+                    <button type="button" class="taste-button" data-id="Cconpota" data-name="コーンポタージュ味">選択</button>
                 </div>
                 <div>
-                    <p>バター醤油味</p>
-                    <textarea class="changepricedata" id="Cbataseuyu" placeholder="数値を入力"></textarea>
+                    <div><img class="stock" src="" alt="バター醤油"></div>
+                    <button type="button" class="taste-button" data-id="Cbataseuyu" data-name="バター醤油味">選択</button>
                 </div>
                 <div>
-                    <p>BBQ味</p>
-                    <textarea class="changepricedata" id="CBBQ" placeholder="数値を入力"></textarea>
+                    <div><img class="stock" src="" alt="BBQ"></div>
+                    <button type="button" class="taste-button" data-id="CBBQ" data-name="バーベキュー味">選択</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-container" id="changeprice">
+        <div class="modal-body">
+            <!-- 閉じるボタン -->
+            <div class="modal-close">×</div>
+            <!-- モーダル内のコンテンツ -->
+            <div class="modal-content">
+                <p class="modal-intext"></p>
+                <div> 
+                    <p>値段</p>
+                    <textarea class="channgepricedata" placeholder="数値を入力"></textarea>
                 </div>
                 <div>
-                    <button type="button" class="changecostsubmit">確定</button>
-                </div>
-                <div>
-                    <button type="button" class="cancel">キャンセル</button>
+                    <button type="button" class="change-check">変更確認</button>
                 </div>
             </div>
         </div>
@@ -207,7 +216,9 @@
     <!--ここにchange-submitを作りなさいこれは命令だ。
         あとjs側にもchange-submit用の確認モーダルを作りなさい。-->
 
-    <div class="modal-container" id="change-check-modal">
+
+
+    <div class="modal-container" id="changecheck">
         <div class="modal-body">
             <!-- モーダル内のコンテンツ -->
             <div class="modal-content">
@@ -219,7 +230,7 @@
                 <div class="changebataseuyuvalue"></div>
                 <div class="changeBBQvalue"></div>
                 <div>
-                    <button type="button" class="submit">注文確定</button>
+                    <button type="button" class="changepricesubmit">変更確定</button>
                 </div>
                 <div>
                     <button type="button" class="cancel">キャンセル</button>
