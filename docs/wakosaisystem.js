@@ -110,7 +110,6 @@ $(function(){
 			let submitmodal = $('#salessubmit');
 			let salescount = $('.salescount').val();
 			let priceref = ref(database, `data/price/${taste}`);
-			console.log(price);
 			
 			const latestQuery = query(priceref, orderByKey(), limitToLast(1));
 			
@@ -118,20 +117,22 @@ $(function(){
 				salescheck.removeClass('active')
 			});
 				
-			console.log (price)
+			
 			if (salescount.trim() !== "" ){
 				get(latestQuery).then((snapshot) => {
 					const data = snapshot.val();
 					const latestTimestamp = Object.keys(data)[0];
 					const latestRecord = data[latestTimestamp];
 					const price =  latestRecord.price;
-				});
-				console.log(price)	
-				push(dynamicRef,{
-					count: salescount,
-					price: price,
-					timestamp: Date.now()
+
+					console.log(price)	
+					push(dynamicRef,{
+						count: salescount,
+						price: price,
+						timestamp: Date.now()
+					})
 				})
+				
 				
 				.then(() => {
 					// 送信が成功した時の処理
