@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
-import { getDatabase, ref, push, onValue} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
+import { getDatabase, ref, push, onValue, set, get, query, orderByKey, limitToLast} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -22,16 +22,29 @@ const database = getDatabase(app);
 
 
 $(function(){
+	const firsttimestamp = Date.now();
+	set(ref(database, `data/price/Csolt/${firsttimestamp}`),{
+		price: 300
+	});
+	set(ref(database, `data/price/Cconsome/${firsttimestamp}`),{
+		price: 300
+	});
+	set(ref(database, `data/price/Cnorisolt/${firsttimestamp}`),{
+		price: 300
+	});
+	set(ref(database, `data/price/Cconpota/${firsttimestamp}`),{
+		price: 300
+	});
+	set(ref(database, `data/price/Cbataseuyu/${firsttimestamp}`),{
+		price: 300
+	});
+	set(ref(database, `data/price/CBBQ/${firsttimestamp}`),{
+		price: 300
+	});
 
-	let soltprice = 300;
-	let consomeprice = 300;
-	let norisoltprice = 300;
-	let conpotaprice = 300;
-	let bataseuyuprice = 300;
-	let BBQprice = 300;
 	
 	//salesモーダル表示用関数
-	$('.taste-button').on('click', function(){
+	$('.salestaste').off('click').on('click', function(){
 		let taste = $(this).data('id');
 		let name = $(this).data('name');
 		sales(taste, name);
@@ -41,6 +54,7 @@ $(function(){
 	function sales(taste, name){
 		console.log('salesモーダルが呼び出されました')
 		let dynamicRef = ref(database, `data/sales/${taste}`);
+		let salescheck = $('#salescheck');
 		let close = $('.modal-close');
 		let salesinput = $('#sales-input');
 
@@ -65,10 +79,9 @@ $(function(){
 
 		$('.modal-intext').text(name);
 		
-		$('.submit-check').on('click', function(){
-			let submitmodal = $('#submit-modal');
-			let Lsalescount = $('.Lsales-count').val();
-			let Ssalescount = $('.Ssales-count').val();
+		// 購入確定前チェック
+		$('.salescheck').off('click').on('click', function(){
+			let salescount = $('.salescount').val();
 
 			//モーダル切り替えのために即時モーダルを閉じる
 			$(function(){
@@ -76,49 +89,57 @@ $(function(){
 			});
 
 			$(function(){
-				submitmodal.addClass('active');
+				salescheck.addClass('active');
 				return false;
 			});
 
-			$('.Lcount').text("Lサイズ" + Lsalescount + "個");
-			$('.Scount').text("Sサイズ" + Ssalescount + "個");
-
+			$('.countcheck').text("販売個数：" + salescount + "個");
 			$('.cancel').on('click', function(){
-				$('.Lsales-count').val('');
-				$('.Ssales-count').val('');
-				submitmodal.removeClass('active');
+				$('.salescount').val('');
+
+				salescheck.removeClass('active');
 			});
 		});
+			
 
 	
-		//確定ボタンでDBに格納
-		$('.submit').on('click', function(){
-			let submitmodal = $('#submit-modal');
-			let Lsalescount = $('.Lsales-count').val();
-			let Ssalescount = $('.Ssales-count').val();
+		// 確定ボタンでDBに格納
+		// 絶賛エラー中ｗ
+		// priceのスコープがうまくいってないのか未定義状態で格納しようとしている
+		$('.salessubmit').off('click').on('click', function(){
+			let submitmodal = $('#salessubmit');
+			let salescount = $('.salescount').val();
+			let priceref = ref(database, `data/price/C${taste}`);
+			
+			const latestQuery = query(priceref, orderByKey(), limitToLast(1));
+			
+			$(function(){
+				salescheck.removeClass('active')
+			});
+				
+			
+			if (salescount.trim() !== "" ){
+				get(latestQuery).then((snapshot) => {
+					const data = snapshot.val();
+					const latestTimestamp = Object.keys(data)[0];
+					const latestRecord = data[latestTimestamp];
+					const price =  Number(latestRecord.price);
 
-			if (Lsalescount.trim() !== "" || Ssalescount.trim() !== ""){
-				if (Lsalescount.trim() == ""){
-					Lsalescount = 0
-				};
-
-				if (Ssalescount.trim() == ""){
-					Ssalescount = 0
-				};
-
-				push(dynamicRef,{
-					Lcount: Lsalescount,
-					Scount: Ssalescount,
-					timestamp: Date.now()
+					console.log(price)	
+					push(dynamicRef,{
+						count: salescount,
+						price: price,
+						timestamp: Date.now()
+					})
 				})
+				
+				
 				.then(() => {
 					// 送信が成功した時の処理
 					console.log("DBへの格納に成功しました");
 					
 					// 送信後に textarea の中身を空っぽにするx
-					$('.Lsales-count').val('');
-					$('.Ssales-count').val('');
-
+					$('.salescount').val('');
 					
 					// 送信後にモーダルを閉じる
 					$(function(){
@@ -151,7 +172,10 @@ $(function(){
 					// 万が一エラーが起きた場合
 					console.error("DBへの格納に失敗しました:", error);
 				});
+			
+
 			};
+			
 		});
 	};
 
@@ -198,148 +222,75 @@ $(function(){
 				return;
 			}
 
-			// Llog
+			// log　値段変更の可能性が出てきたため作り直し必須
 			// 集計結果を格納する空のオブジェクト（箱）を作る
-			const Ltotals = {};
+			const totals = {};
+			const values = {};
 
 			// 【ループ1】各 taste（商品名やIDなど）ごとに処理を回す
-			Object.keys(allData).forEach((LtasteKey) => {
-				const tasteGroup = allData[LtasteKey]; // 特定のtaste配下のデータ塊
-				let Ltastetotal = 0;
+			Object.keys(allData).forEach((tasteKey) => {
+				const tasteGroup = allData[tasteKey]; // 特定のtaste配下のデータ塊
+				let tastetotalcount = 0;
+				let tastetotalprice = 0;
 
 				// 【ループ2】自動生成されたユニークキー（-NXv...）ごとに処理を回す
 				Object.keys(tasteGroup).forEach((uniqueKey) => {
 					const record = tasteGroup[uniqueKey];
 					
 					// 💡 文字列として入っている「Lcount」を、Number() で安全に数値（数字）に変換
-					const LcountNum = Number(record.Lcount);
+					const countNum = Number(record.count);
+					const priceNum = Number(record.price);
 
 					// 有効な数字であれば、そのtasteの合計にプラスする
-					if (!isNaN(LcountNum)) {
-						Ltastetotal += LcountNum;
+					if (!isNaN(countNum)) {
+						tastetotalcount += countNum;
+					}
+					if (!isNaN(priceNum)) {
+						tastetotalprice += priceNum * countNum;
 					}
 				});
 
 				// 集計した合計数を、tasteの名前をキーにして保存
-				Ltotals[LtasteKey] = Ltastetotal;
-			});
-
-			// Slog
-			// 集計結果を格納する空のオブジェクト（箱）を作る
-			const Stotals = {};
-
-			// 【ループ1】各 taste（商品名やIDなど）ごとに処理を回す
-			Object.keys(allData).forEach((StasteKey) => {
-				const tasteGroup = allData[StasteKey]; // 特定のtaste配下のデータ塊
-				let Stastetotal = 0;
-
-				// 【ループ2】自動生成されたユニークキー（-NXv...）ごとに処理を回す
-				Object.keys(tasteGroup).forEach((uniqueKey) => {
-					const record = tasteGroup[uniqueKey];
-					
-					// 💡 文字列として入っている「Scount」を、Number() で安全に数値（数字）に変換
-					const ScountNum = Number(record.Scount);
-
-					// 有効な数字であれば、そのtasteの合計にプラスする
-					if (!isNaN(ScountNum)) {
-						Stastetotal += ScountNum;
-					}
-				});
-
-				// 集計した合計数を、tasteの名前をキーにして保存
-				Stotals[StasteKey] = Stastetotal;
+				totals[tasteKey] = tastetotalcount;
+				values[tasteKey] = tastetotalprice;
 			});
 
 
 			// 3. 画面（またはコンソール）に出力する
-			LoutputTotalResults(Ltotals);
-			SoutputTotalResults(Stotals);
-			tasteTotalResults(Ltotals, Stotals);
+			countTotalResults(totals);
+			tasteTotalResults(values);
 		});
 
 		// Ltotal反映用
-		function LoutputTotalResults(Ltotals) {
-			console.log("【最新集計結果】", Ltotals);
-			let Lsum = 0;
+		function countTotalResults(totals) {
+			console.log("【最新集計結果】", totals);
+			let countsum = 0;
 
 			// 1. データベースにある「taste」ごとにループを回す
-			Object.keys(Ltotals).forEach((tasteName) => {
-				const LtotalCount = Ltotals[tasteName]; // その味の合計個数
+			Object.keys(totals).forEach((tasteName) => {
+				const LtotalCount = totals[tasteName]; // その味の合計個数
 				
 				// 2. tasteNameと同じクラス（例: .chocolate や .vanilla）を持つ行を探す
 				// その行の中にある「.count-value」という要素の文字を、最新の合計数に書き換える
 				// 💡末尾に「 個」などのお好みの単位を付けられます
 				$(`.${tasteName} .Lcount-value`).text(`${LtotalCount} 個`);
-				Lsum += LtotalCount;
+				countsum += LtotalCount;
 				console.log(LtotalCount);
-				console.log(Lsum);
+				console.log(countsum);
 			});
 			
-			$(`.sum .Ltotal`).text(`${Lsum} 個`);
+			$(`.sum .salestotal`).text(`${countsum} 個`);
 		};
 		
-
-		// Stotal反映用
-		function SoutputTotalResults(Stotals) {
-			console.log("【最新集計結果】", Stotals);
-			let Ssum = 0;
-
-			// 1. データベースにある「taste」ごとにループを回す
-			Object.keys(Stotals).forEach((tasteName) => {
-				const StotalCount = Stotals[tasteName]; // その味の合計個数
-
-				// 2. tasteNameと同じクラス（例: .chocolate や .vanilla）を持つ行を探す
-				// その行の中にある「.count-value」という要素の文字を、最新の合計数に書き換える
-				// 💡末尾に「 個」などのお好みの単位を付けられます
-				$(`.${tasteName} .Scount-value`).text(`${StotalCount} 個`);
-				Ssum = Ssum + StotalCount;
-			});
-			$(`.sum .Stotal`).text(`${Ssum} 個`);
-		};
-
-		function tasteTotalResults(Ltotals, Stotals){
+		function tasteTotalResults(values) {
 			let tastesum = 0;
 			let allsum = 0;
 
-			Object.keys(Ltotals).forEach((tasteName) => {
-				const LtotalCount = Ltotals[tasteName];
-				const StotalCount = Stotals[tasteName];
+			Object.keys(values).forEach((tasteName) => {
+				const totalValue = values[tasteName];
 
-
-				// ここを変数化しないといけない
-				// 変数化したV
-				switch (tasteName){
-					case "solt":
-						tastesum = LtotalCount * soltprice + StotalCount * soltprice;
-						$(`.${tasteName} .total`).text(`${tastesum} 円`);
-						allsum = allsum + tastesum;
-						break;
-					case "consome":
-						tastesum = LtotalCount * consomeprice + StotalCount * consomeprice;
-						$(`.${tasteName} .total`).text(`${tastesum} 円`);
-						allsum = allsum + tastesum;
-						break;
-					case "norisolt":
-						tastesum = LtotalCount * norisoltprice + StotalCount * norisoltprice;
-						$(`.${tasteName} .total`).text(`${tastesum} 円`);
-						allsum = allsum + tastesum;
-						break;
-					case "conpota":
-						tastesum = LtotalCount * conpotaprice + StotalCount * conpotaprice;
-						$(`.${tasteName} .total`).text(`${tastesum} 円`);
-						allsum = allsum + tastesum;
-						break;
-					case "bataseuyu":
-						tastesum = LtotalCount * bataseuyuprice + StotalCount * bataseuyuprice;
-						$(`.${tasteName} .total`).text(`${tastesum} 円`);
-						allsum = allsum + tastesum;
-						break;
-					case "BBQ":
-						tastesum = LtotalCount * BBQprice + StotalCount * BBQprice;
-						$(`.${tasteName} .total`).text(`${tastesum} 円`);
-						allsum = allsum + tastesum;
-						break;
-				}
+				$(`.${tasteName} .total`).text(`${totalValue} 円`);
+				allsum += totalValue;
 			});
 
 			$(`.sum .allrangetotal`).text(`${allsum} 円`);
@@ -349,44 +300,71 @@ $(function(){
 		
 	};
 
-	$('.change').on('click', function(){
-		change()
+
+	// 価格切り替え用
+	$('.change').off('click').on('click', function(){
+			change()
 	});
 
+	//　値段を変える味を決めるためのモーダルウィンドウ
 	function change(){
+		console.log("changeselectモーダルの表示")
 
-		let close = $('.modal-close'),
-		changeprice= $('#changeprice');
+		let close = $('.modal-close');
+		let changeselect = $('#changeselect');
+		let changeprice = $('#changeprice');
+		let changecheck = $('#changecheck');
 		
-
 		//モーダルウィンドうぉ即時表示
 		$(function(){
-			changeprice.addClass('active');
+			changeselect.addClass('active');
 			return false;
 		});
 
 		//閉じるボタンをクリックしたらモーダルを閉じる
 		close.on('click',function(){	
-			changeprice.removeClass('active');
+			changeselect.removeClass('active');
 		});
 
 		//モーダルの外側をクリックしたらモーダルを閉じる
 		$(document).on('click',function(e) {
 			if(!$(e.target).closest('.modal-body').length) {
-				changeprice.removeClass('active');
+				changeselect.removeClass('active');
 			};
 		});
 
-		$('.change-check').on('click', function(){
-			let changecheckmodal = $('#change-check-modal');
+		//　変更金額を決めるためのモーダルウィンドウ
+		$('.changetaste').off('click').on('click', function(){
+			console.log("changepriceモーダルの表示")
+
+			let taste = $(this).data('id');
+			let name = $(this).data('name');
 			
-			
-			let Csolt = $('#Csolt');
-			let Cconsome = $('#Cconsome');
-			let Cnorisolt = $('#Cnorisolt');
-			let Cconpota = $('#Cconpota');
-			let Cbataseuyu = $('#Cbataseuyu');
-			let CBBQ = $('#CBBQ');
+			$(function(){
+				changeselect.removeClass('active');
+			});
+
+			$(function(){
+				changeprice.addClass('active');
+				return false;
+			});
+
+			//閉じるボタンをクリックしたらモーダルを閉じる
+			close.on('click',function(){	
+				changeprice.removeClass('active');
+			});
+
+			//モーダルの外側をクリックしたらモーダルを閉じる
+			$(document).on('click',function(e) {
+				if(!$(e.target).closest('.modal-body').length) {
+					changeprice.removeClass('active');
+				};
+			});
+
+			$('.modal-intext').text(name);
+
+			$('.change-check').off('click').on('click', function(){
+			let changepricevalue = $('.changepricevalue');
 			
 			//モーダル切り替えのために即時モーダルを閉じる
 			$(function(){
@@ -394,17 +372,63 @@ $(function(){
 			});
 
 			$(function(){
-				changecheckmodal.addClass('active');
+				changecheck.addClass('active');
 				return false;
 			});
 
-			$('.changesoltvalue').text("塩味" + Csolt + "円");
-			$('.changeconsomevalue').text("コンソメ味" + Cconsome + "円")
+			$('.countcheck').text("変更価格：" + changepricevalue.val() + "円");
+				$('.cancel').on('click', function(){
+					$('.salescount').val('');
+					submitmodal.removeClass('active');
+				});
+			});
 
+			$('.changepricesubmit').off('click').on('click', function(){
+				let timestamp = Date.now();
+				let priceRef = ref(database, `data/price/${taste}/${timestamp}`);
+				let changepricevalue = $('.changepricevalue').val();
+				
+				set(priceRef,{
+					price : changepricevalue
+				})
 
+				.then(() => {
+					// 送信が成功した時の処理
+					console.log("DBへの格納に成功しました");
+					
+					$('.changepricevalue').val('');
+
+					$(function(){
+						let close = $('.modal-close');
+						let successmodal = $('#success-modal');
+
+						changecheck.removeClass('active');
+
+						//モーダルウィンドうぉ即時表示
+						$(function(){
+							successmodal.addClass('active');
+							return false;
+						});
+
+						//閉じるボタンをクリックしたらモーダルを閉じる
+						close.on('click',function(){	
+							successmodal.removeClass('active');
+						});
+
+						//モーダルの外側をクリックしたらモーダルを閉じる
+						$(document).on('click',function(e) {
+							if(!$(e.target).closest('.modal-body').length) {
+								successmodal.removeClass('active');
+							};
+						});
+					});
+				})
+				.catch((error) => {
+					// 万が一エラーが起きた場合
+					console.error("DBへの格納に失敗しました:", error);
+				});
+				
+			});
 		});
 	};
-
-	
-    
 });
