@@ -44,7 +44,7 @@ $(function(){
 
 	
 	//salesモーダル表示用関数
-	$('.salestaste').on('click', function(){
+	$('.salestaste').off('click').on('click', function(){
 		let taste = $(this).data('id');
 		let name = $(this).data('name');
 		sales(taste, name);
@@ -80,7 +80,7 @@ $(function(){
 		$('.modal-intext').text(name);
 		
 		// 購入確定前チェック
-		$('.salescheck').on('click', function(){
+		$('.salescheck').off('click').on('click', function(){
 			let salescount = $('.salescount').val();
 
 			//モーダル切り替えのために即時モーダルを閉じる
@@ -106,10 +106,10 @@ $(function(){
 		// 確定ボタンでDBに格納
 		// 絶賛エラー中ｗ
 		// priceのスコープがうまくいってないのか未定義状態で格納しようとしている
-		$('.salessubmit').on('click', function(){
+		$('.salessubmit').off('click').on('click', function(){
 			let submitmodal = $('#salessubmit');
 			let salescount = $('.salescount').val();
-			let priceref = ref(database, `data/price/${taste}`);
+			let priceref = ref(database, `data/price/C${taste}`);
 			
 			const latestQuery = query(priceref, orderByKey(), limitToLast(1));
 			
@@ -302,7 +302,7 @@ $(function(){
 
 
 	// 価格切り替え用
-	$('.change').on('click', function(){
+	$('.change').off('click').on('click', function(){
 			change()
 	});
 
@@ -334,7 +334,7 @@ $(function(){
 		});
 
 		//　変更金額を決めるためのモーダルウィンドウ
-		$('.changetaste').on('click', function(){
+		$('.changetaste').off('click').on('click', function(){
 			console.log("changepriceモーダルの表示")
 
 			let taste = $(this).data('id');
@@ -363,7 +363,7 @@ $(function(){
 
 			$('.modal-intext').text(name);
 
-			$('.change-check').on('click', function(){
+			$('.change-check').off('click').on('click', function(){
 			let changepricevalue = $('.changepricevalue');
 			
 			//モーダル切り替えのために即時モーダルを閉じる
@@ -383,7 +383,7 @@ $(function(){
 				});
 			});
 
-			$('.changepricesubmit').on('click', function(){
+			$('.changepricesubmit').off('click').on('click', function(){
 				let timestamp = Date.now();
 				let priceRef = ref(database, `data/price/${taste}/${timestamp}`);
 				let changepricevalue = $('.changepricevalue').val();
