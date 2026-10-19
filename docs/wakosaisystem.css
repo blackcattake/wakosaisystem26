@@ -1,100 +1,364 @@
-/*モーダルを開くボタン*/
-.modal-open{
-	position: fixed;
-	display: flex;
-    align-items: center;
-    justify-content: center;
-    top: 50%;
-    left: 50%;
-	width: 300px;
-	height: 50px;
-	font-weight: bold;
-	color: #fff;
-	background: #000;
-	margin: auto;
-	cursor: pointer;
-	transform: translate(-50%,-50%);
-}
-/*モーダル本体の指定 + モーダル外側の背景の指定*/
-.modal-container{
-	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	text-align: center;
-	background: rgba(0,0,0,50%);
-	padding: 40px 20px;
-	overflow: auto;
-	opacity: 0;
-	visibility: hidden;
-	transition: .3s;
+@charset "utf-8";
+
+/* ==========================================================================
+   1. 基本設定・ベーススタイル
+   ========================================================================== */
+* {
     box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none; /* 連打時のテキスト選択青ハイライトを防止 */
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
 }
-/*モーダル本体の擬似要素の指定*/
-.modal-container:before{
-	content: "";
-	display: inline-block;
-	vertical-align: middle;
-	height: 100%;
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: #0f172a; /* 深みのあるダークブルーグレー */
+    color: #f8fafc;
+    line-height: 1.5;
+    padding: 24px;
+    min-height: 100vh;
+    
+    /* 💡 PC画面向け：全体をFlexboxで整列（横3列×縦2列をキレイに保持） */
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-content: flex-start;
+    gap: 16px;
+    max-width: 1200px;
+    margin: 0 auto;
 }
-/*モーダル本体に「active」クラス付与した時のスタイル*/
-.modal-container.active{
-	opacity: 1;
-	visibility: visible;
+
+h1 {
+    width: 100%; /* 横幅いっぱいに広げて最上部に固定 */
+    font-size: 2rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 8px;
+    color: #38bdf8;
+    letter-spacing: 0.05em;
 }
-/*モーダル枠の指定*/
-.modal-body{
-	position: relative;
-	display: inline-block;
-	vertical-align: middle;
-	max-width: 500px;
-	width: 90%;
+
+/* ==========================================================================
+   2. メイン画面：商品カードレイアウト（PCで横3列 × 縦2列）
+   ========================================================================== */
+/* 商品カード（味選択）の親コンテナ群 */
+body > div:has(.salestaste) {
+    position: relative;
+    /* 💡 3列配置にする計算（ギャップ16px×2個分＝32pxを差し引いて3等分） */
+    width: calc((100% - 32px) / 3);
+    background: #1e293b;
+    border: 2px solid #334155;
+    border-radius: 16px;
+    padding: 16px;
+    text-align: center;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
 }
-/*モーダルを閉じるボタンの指定*/
-.modal-close{
-	position: absolute;
-	display: flex;
+
+/* ホバー・タップ時のフィードバック */
+body > div:has(.salestaste):hover {
+    border-color: #38bdf8;
+    background: #1e293b;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 16px -2px rgba(56, 189, 248, 0.25);
+}
+
+body > div:has(.salestaste):active {
+    transform: scale(0.97);
+    background: #0f172a;
+}
+
+/* 画像エリアの整列 */
+body > div:has(.salestaste) > div {
+    width: 100%;
+    height: 150px;
+    overflow: hidden;
+    border-radius: 12px;
+    background-color: #334155;
+    display: flex;
     align-items: center;
     justify-content: center;
-	top: -40px;
-	right: -40px;
-	width: 40px;
-	height: 40px;
-	font-size: 40px;
-	color: #fff;
-	cursor: pointer;
-}
-/*モーダル内のコンテンツの指定*/
-.modal-content{
-	background: #fff;
-	text-align: left;
-	padding: 30px;
-}
-/*テーブルスタイル*/
-table {
-  border-collapse: collapse;
-  border: 2px solid rgb(140 140 140);
-  font-family: sans-serif;
-  font-size: 0.8rem;
-  letter-spacing: 1px;
 }
 
-thead,
-tfoot {
-  background-color: rgb(228 240 245);
+.stock {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none; /* 画像自体のイベントを無効化しボタンに透過 */
 }
 
-th,
-td {
-  border: 1px solid rgb(160 160 160);
-  padding: 8px 10px;
+/* 透明ボタン（画像の真上にぴったり重ねる設定） */
+.salestaste, .changetaste {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0; /* 完全に透明化 */
+    cursor: pointer;
+    z-index: 10; /* 画像の上に重ねる */
+    border: none;
+    background: transparent;
 }
 
-td:last-of-type {
-  text-align: center;
+/* ==========================================================================
+   3. 下部固定アクションボタン（履歴表示・設定価格変更）
+   ========================================================================== */
+body > div:has(.log),
+body > div:has(.change) {
+    /* 💡 商品カード6個（横3×縦2）の下にキレイに横並び配置 */
+    width: calc((100% - 16px) / 2);
+    margin-top: 12px;
 }
 
-tbody > tr:nth-of-type(even) {
-  background-color: rgb(237 238 242);
+button.log, button.change {
+    width: 100%;
+    padding: 16px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+}
+
+button.log {
+    background-color: #3b82f6;
+    color: #ffffff;
+}
+
+button.log:hover {
+    background-color: #2563eb;
+}
+
+button.change {
+    background-color: #475569;
+    color: #f8fafc;
+}
+
+button.change:hover {
+    background-color: #334155;
+}
+
+button.log:active, button.change:active {
+    transform: scale(0.98);
+}
+
+/* ==========================================================================
+   4. モーダルウィンドウ（JavaScript `.active` クラス対応）
+   ========================================================================== */
+/*モーダル本体の指定 + モーダル外側の背景の指定*/
+.modal-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    background: rgba(15, 23, 42, 0.85); /* ダークな背景 */
+    backdrop-filter: blur(6px); /* 背景ぼかし */
+    padding: 40px 20px;
+    overflow: auto;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    box-sizing: border-box;
+    z-index: 1000;
+}
+
+/*モーダル本体の擬似要素（上下中央揃え用）*/
+.modal-container:before {
+    content: "";
+    display: inline-block;
+    vertical-align: middle;
+    height: 100%;
+}
+
+/* JavaScriptで「active」クラスが付与された時に表示 */
+.modal-container.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/*モーダル枠の指定*/
+.modal-body {
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+    max-width: 500px;
+    width: 90%;
+    text-align: left;
+}
+
+/*モーダルを閉じるボタン（×）*/
+.modal-close {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    top: -40px;
+    right: 0px;
+    width: 40px;
+    height: 40px;
+    font-size: 32px;
+    color: #f8fafc;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.modal-close:hover {
+    color: #38bdf8;
+}
+
+/*モーダル内のコンテンツスタイル*/
+.modal-content {
+    background: #1e293b; /* モーダル内背景 */
+    color: #f8fafc;
+    border: 1px solid #334155;
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+}
+
+.modal-intext {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #38bdf8;
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+/* 数値入力エリア */
+textarea.salescount, textarea.changepricevalue {
+    width: 100%;
+    height: 60px;
+    font-size: 1.8rem;
+    font-weight: 700;
+    text-align: center;
+    color: #f8fafc;
+    background-color: #0f172a;
+    border: 2px solid #3b82f6;
+    border-radius: 10px;
+    padding: 8px;
+    margin: 8px 0 20px 0;
+    resize: none;
+    outline: none;
+}
+
+textarea.salescount:focus, textarea.changepricevalue:focus {
+    border-color: #38bdf8;
+    box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.2);
+}
+
+/* モーダル内確認・決定ボタン */
+button.salescheck, button.salessubmit, button.change-check, button.changepricesubmit {
+    width: 100%;
+    padding: 14px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    background-color: #22c55e;
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-top: 8px;
+}
+
+button.salescheck:hover, button.salessubmit:hover, 
+button.change-check:hover, button.changepricesubmit:hover {
+    background-color: #16a34a;
+}
+
+button.cancel {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+    background-color: transparent;
+    color: #94a3b8;
+    border: 1px solid #475569;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: all 0.2s;
+}
+
+button.cancel:hover {
+    background-color: #334155;
+    color: #f8fafc;
+}
+
+/* ==========================================================================
+   5. 売上確認用テーブルモーダル (#sales-logs)
+   ========================================================================== */
+#sales-logs .modal-body {
+    max-width: 650px;
+}
+
+#sales-logs table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
+    font-size: 0.95rem;
+}
+
+#sales-logs th, #sales-logs td {
+    padding: 12px 14px;
+    text-align: right;
+    border-bottom: 1px solid #334155;
+}
+
+#sales-logs th[scope="col"], #sales-logs th[scope="row"] {
+    text-align: left;
+    color: #f8fafc;
+}
+
+#sales-logs thead th {
+    color: #94a3b8;
+    background-color: #0f172a;
+    border-bottom: 2px solid #475569;
+}
+
+#sales-logs tbody tr:nth-of-type(even) {
+    background-color: rgba(255, 255, 255, 0.02);
+}
+
+#sales-logs tbody tr.sum {
+    border-top: 2px solid #38bdf8;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #38bdf8;
+}
+
+/* ==========================================================================
+   6. 価格変更モーダル (#changeselect)
+   ========================================================================== */
+#changeselect .modal-content {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+#changeselect .modal-content > div:first-child {
+    grid-column: span 3;
+}
+
+#changeselect div[id$="content"] {
+    position: relative;
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 10px;
+    padding: 8px;
+    text-align: center;
+}
+
+#changeselect div[id$="content"] img {
+    width: 100%;
+    height: 70px;
+    object-fit: cover;
+    border-radius: 6px;
 }
